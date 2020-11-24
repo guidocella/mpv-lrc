@@ -22,6 +22,7 @@ mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
 end)
 
 mp.add_key_binding('Alt+l', 'show-lyrics', function()
+    utils.shared_script_property_set('showed-lyrics', 1)
     mp.set_property('osd-align-x', 'center')
     socket = require 'socket'
     socket.unix = require 'socket.unix'

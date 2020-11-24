@@ -44,7 +44,7 @@ While another mpv instance is playing songs, this shows their lyrics on the OSD 
 
 The default keybinding is `Alt+l` and it can be changed by binding `script-message show-lyrics`. This function requires lua-socket, which can be installed with `pacman -S lua51-socket` on Arch or `apt install lua-socket` on Debian.
 
-This unfortunately prevents mpv from quitting unless you press `Ctrl+c` twice in the terminal, so we need to register a shutdown handler that instructs mpv to terminate again in `lrc-shutdown.lua`; this must be in a different script. Note that this doesn't prevent `end-file` handlers from being executed.
+This unfortunately prevents mpv from quitting unless you press `Ctrl+c` twice in the terminal, so we need to register a shutdown handler that instructs mpv to terminate again in `lrc-shutdown.lua`; this must be in a different script. This is done only if `show-lyrics` was started to reduce the chances of `end-file` handlers not completing.
 
 You can alternatively break out of the loop when the `playback-abort` property is `true`, but that still delays quitting until the next line is fetched.
 
