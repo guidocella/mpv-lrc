@@ -40,6 +40,8 @@ The default keybinding is `Ctrl+o` and it can be changed by binding `script-mess
 
 ### show-lyrics
 
+If you use Wayland, you can display lyrics in a transparent overlay with `--background=0/0/0/0 --alpha` instead of bothering with this.
+
 While another mpv instance is playing songs, this shows their lyrics on the OSD of the current mpv instance which is playing videos or images.
 
 The default keybinding is `Alt+l` and it can be changed by binding `script-message show-lyrics`. This function requires lua-socket, which can be installed with `pacman -S lua51-socket` on Arch or `apt install lua-socket` on Debian.
