@@ -24,9 +24,7 @@ end)
 mp.add_key_binding('Alt+l', 'show-lyrics', function()
     utils.shared_script_property_set('showed-lyrics', 1)
     mp.set_property('osd-align-x', 'center')
-    local socket = require 'socket'
-    socket.unix = require 'socket.unix'
-    local connection = socket.unix()
+    local connection = require 'socket.unix'()
     connection:connect('/tmp/mpv-socket')
     connection:send('{"command": ["observe_property", 1, "sub-text"]}\n')
     while true do
