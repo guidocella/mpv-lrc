@@ -30,27 +30,13 @@ Requires jq.
 
 ## lrc.lua
 
-This provides 2 keybindings:
-
-### offset-lrc
-
-After adjusting `sub-delay` in mpv, this offsets the timestamps in the current lrc file accordingly (using ffmpeg). It then resets `sub-delay` and reloads the sub track so you can update the lrc again if necessary.
+After adjusting `sub-delay` in mpv, the `offset-lrc` script message offsets the timestamps in the current lrc file accordingly (using ffmpeg). It then resets `sub-delay` and reloads the sub track so you can update the lrc again if necessary.
 
 The default keybinding is `Ctrl+o` and it can be changed by binding `script-message offset-lrc`
 
-### show-lyrics
+## Overlay
 
-If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyrics in a transparent overlay with `--background=0/0 --alpha` instead of bothering with this.
-
-While another mpv instance is playing songs, this shows their lyrics on the OSD of the current mpv instance which is playing videos or images.
-
-The default keybinding is `Alt+l` and it can be changed by binding `script-message show-lyrics`. This function requires lua-socket, which can be installed with `pacman -S lua51-socket` on Arch or `apt install lua-socket` on Debian.
-
-This unfortunately prevents mpv from quitting unless you press `Ctrl+c` twice in the terminal, so we need to register a shutdown handler that instructs mpv to terminate again in `lrc-shutdown.lua`; this must be in a different script. This is done only if `show-lyrics` was started to reduce the chances of `end-file` handlers not completing.
-
-You can alternatively break out of the loop when the `playback-abort` property is `true`, but that still delays quitting until the next line is fetched.
-
-I used to have this functionality in a shell script that communicated between the sockets of the 2 mpv instances, but that was also problematic because the socket I use for videos and images changes at runtime and may be missing.
+If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyrics in a transparent overlay with `--background=0/0 --alpha --ontop`.
 
 ## Note on using lrc files from Minilyrics in mpv
 
