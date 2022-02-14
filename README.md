@@ -12,11 +12,7 @@ This provides the following keybindings:
 
 It also increases `scrolloff` to keep the cursor in the center as you synchronize the lines.
 
-To use this, add
-``vim
-autocmd BufNewFile,BufReadPost *.lrc setfiletype lrc
-``
-to your configuration file, then just copy `lrc.vim` to `~/.config/nvim/ftplugin`/`~/.vimrc/ftplugin`. It's a tiny file anyway and you may want to change the mappings or the socket path.
+To use this, add `autocmd BufNewFile,BufReadPost *.lrc setfiletype lrc` to your configuration file, then just copy `lrc.vim` to `~/.config/nvim/ftplugin` or `~/.vimrc/ftplugin`. It's a tiny file anyway and you may want to change the mappings or the socket path.
 
 I recommend https://github.com/vim-scripts/lrc.vim for syntax highlighting. It errors because of carriage returns, but you can remove them with `sed -i 's/\r//' lrc.vim`
 
