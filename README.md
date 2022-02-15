@@ -2,6 +2,14 @@ This is a collection of scripts for Unix-like systems to manage lrc synchronized
 
 `input-ipc-server=/tmp/mpv-socket` is assumed for the mpv instance that plays music and socat is required.
 
+## lrc.sh
+
+This POSIX script creates the skeleton of a new lrc file by fetching the metadata of the song playing in mpv and your nickname from the first argument to it, and opens it in `$EDITOR`. It also opens `$BROWSER`, falling back to chromium if that is not defined, pointing it to a page to copy the lyrics from as determined from the top DuckDuckGo search result. If `xclip` or `wl-copy` are installed, it copies the search query to the clipboard, so that when the top result isn't good, you can paste the query in your browser and browse more search results, possibly in a different search engine. When it detects Japanese characters in the song path, it searches for lyrics in Japanese.
+
+If the current song already has an lrc file, it doesn't overwrite it, but opens it in `$EDITOR` so you can quickly fix mistakes you notice while listening to the song.
+
+Requires jq.
+
 ## lrc.vim
 
 This provides the following keybindings:
@@ -15,14 +23,6 @@ It also increases `scrolloff` to keep the cursor in the center as you synchroniz
 To use this, add `autocmd BufNewFile,BufReadPost *.lrc setfiletype lrc` to your configuration file, then just copy `lrc.vim` to `~/.config/nvim/ftplugin` or `~/.vimrc/ftplugin`. It's a tiny file anyway and you may want to change the mappings or the socket path.
 
 I recommend https://github.com/vim-scripts/lrc.vim for syntax highlighting. It errors because of carriage returns, but you can remove them with `sed -i 's/\r//' lrc.vim`
-
-## lrc.sh
-
-This POSIX script creates the skeleton of a new lrc file by fetching the metadata of the song playing in mpv and your nickname from the first argument to it, and opens it in `$EDITOR`. It also opens `$BROWSER`, falling back to chromium if that is not defined, pointing it to a page to copy the lyrics from as determined from the top DuckDuckGo search result. If `xclip` or `wl-copy` are installed, it copies the search query to the clipboard, so that when the top result isn't good, you can paste the query in your browser and browse more search results, possibly in a different search engine. When it detects Japanese characters in the song path, it searches for lyrics in Japanese.
-
-If the current song already has an lrc file, it doesn't overwrite it, but opens it in `$EDITOR` so you can quickly fix mistakes you notice while listening to the song.
-
-Requires jq.
 
 ## lrc.lua
 
