@@ -136,6 +136,98 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
     save_lyrics(lyrics)
 end)
 
+mp.add_key_binding('Alt+n', 'netease-download', function()
+    local metadata = mp.get_property_native('metadata')
+    local title = metadata.title or metadata.TITLE
+    local artist = metadata.artist or metadata.ARTIST
+
+    if not title then
+        error_message('This song has no title metadata')
+        return
+    end
+
+    if not artist then
+        error_message('This song has no artist metadata')
+        return
+    end
+
+    mp.osd_message('Downloading lyrics')
+
+    local r = mp.command_native({
+        name = 'subprocess',
+        capture_stdout = true,
+        args = {
+            'curl',
+            '--silent',
+            '--get',
+            'https://music.xianqiao.wang/neteaseapiv2/search?limit=10',
+            '--data-urlencode', 'keywords=' .. title .. ' ' .. artist,
+        }
+    })
+
+    if r.status > 0 then
+        error_message('The first curl request to NetEase failed with code ' .. r.status)
+        return
+    end
+
+    local response, error = utils.parse_json(r.stdout)
+
+    if error then
+        error_message('Unable to parse the JSON returned by NetEase')
+        return
+    end
+
+    -- io.open('/tmp/netease-search.json', 'w'):write(r.stdout)
+
+    local songs = response.result.songs
+
+    if #songs == 0 then
+        error_message('Lyrics not found')
+        return
+    end
+
+    local song = songs[1]
+    local album = metadata.album or metadata.ALBUM
+    if album then
+        album = album:lower()
+
+        for _, loop_song in pairs(songs) do
+            if loop_song.album.name:lower() == album then
+                song = loop_song
+                break
+            end
+        end
+    end
+
+    mp.msg.verbose('Downloading NetEase lyrics for the song with id: ' .. song.id .. ', name: ' .. song.name .. ', artist: ' .. song.artists[1].name .. ', album: ' .. song.album.name)
+
+    r = mp.command_native({
+        name = 'subprocess',
+        capture_stdout = true,
+        args = {
+            'curl',
+            '--silent',
+            'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. song.id,
+        }
+    })
+
+    if r.status > 0 then
+        error_message('The second curl request to NetEase failed with code ' .. r.status)
+        return
+    end
+
+    response, error = utils.parse_json(r.stdout)
+
+    if error then
+        error_message('Unable to parse the JSON returned by NetEase')
+        return
+    end
+
+    -- io.open('/tmp/netease-song.json', 'w'):write(r.stdout)
+
+    save_lyrics(response.lrc.lyric)
+end)
+
 mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
     local lrc_path = mp.get_property('current-tracks/sub/external-filename')
 

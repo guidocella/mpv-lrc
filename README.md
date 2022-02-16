@@ -1,4 +1,4 @@
-This is a collection of scripts to manage LRC synchronized lyrics of songs playings in mpv. It provides a keybinding to download lyrics of the current song from Musixmatch, and also scripts to create and synchronize lyrics yourself with vim on Unix-like systems.
+This is a collection of scripts to manage LRC synchronized lyrics of songs playings in mpv. It provides keybindings to download the lyrics of the current song, and also scripts to create and synchronize lyrics yourself with vim on Unix-like systems.
 
 ## lrc.lua
 
@@ -7,6 +7,12 @@ This is a collection of scripts to manage LRC synchronized lyrics of songs playi
 Downloads the lyrics of the currently playing song from Musixmatch's API.
 
 The default keybinding is `Alt+m`, and it can be changed by binding `script-message musixmatch-download`
+
+### netease-download
+
+Downloads the lyrics of the currently playing song from NetEase's API. It has more Japanese lyrics than Musixmatch.
+
+The default keybinding is `Alt+n`, and it can be changed by binding `script-message netease-download`
 
 ### offset-lrc
 
