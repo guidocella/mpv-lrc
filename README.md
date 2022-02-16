@@ -4,9 +4,9 @@ This is a collection of scripts for Unix-like systems to manage lrc synchronized
 
 ## lrc.sh
 
-This POSIX script creates the skeleton of a new lrc file by fetching the metadata of the song playing in mpv and your nickname from the first argument to it, and opens it in `$EDITOR`. It also opens `$BROWSER`, falling back to chromium if that is not defined, pointing it to a page to copy the lyrics from as determined from the top DuckDuckGo search result. If `xclip` or `wl-copy` are installed, it copies the search query to the clipboard, so that when the top result isn't good, you can paste the query in your browser and browse more search results, possibly in a different search engine. When it detects Japanese characters in the song path, it searches for lyrics in Japanese.
+This POSIX script creates the skeleton of a new LRC file by fetching the metadata of the song playing in mpv and your nickname from the first argument to it, and opens it in `$EDITOR`. It also opens `$BROWSER`, falling back to chromium if that is not defined, pointing it to a page to copy the lyrics from as determined from the top DuckDuckGo search result. If `xclip` or `wl-copy` are installed, it copies the search query to the clipboard, so that when the top result isn't good, you can paste the query in your browser and browse more search results, possibly in a different search engine. When it detects Japanese characters in the song path, it searches for lyrics in Japanese.
 
-If the current song already has an lrc file, it doesn't overwrite it, but opens it in `$EDITOR` so you can quickly fix mistakes you notice while listening to the song.
+If the current song already has an LRC file, it doesn't overwrite it, but opens it in `$EDITOR` so you can quickly fix mistakes you notice while listening to the song.
 
 Requires jq.
 
@@ -34,13 +34,13 @@ The default keybinding is `Ctrl+o` and it can be changed by binding `script-mess
 
 If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyrics in a transparent overlay with `--background=0/0 --alpha --ontop`.
 
-## Note on using lrc files from Minilyrics in mpv
+## Note on using LRC files from Minilyrics in mpv
 
-ffmpeg doesn't detect lrc files if [id:...] is the first line. id tags can be removed with `sed -i '/\[id:/d' *.lrc`
+ffmpeg doesn't detect LRC files if [id:...] is the first line. id tags can be removed with `sed -i '/\[id:/d' *.lrc`
 
-ffmpeg doesn't detect lrc files encoded in UTF-16. They can be converted to UTF-8 with:
+ffmpeg doesn't detect LRC files encoded in UTF-16. They can be converted to UTF-8 with:
 `for lrc in *.lrc; do if file $lrc | grep -q UTF-16; then iconv -f UTF-16 -t UTF-8 $lrc -o $lrc; fi; done`
 
-ffmpeg doesn't detect lrc files missing the milliseconds. You can add them with `sed -i '/\[[0-9]/s/]/.00]/' foo.lrc`
+ffmpeg doesn't detect LRC files missing the milliseconds. You can add them with `sed -i '/\[[0-9]/s/]/.00]/' foo.lrc`
 
 ffmpeg also splits lines like `[01:00.00][02:00.00]foo` which mpv shows only the first time, and removes blank lines and Windows carriage returns.
