@@ -90,7 +90,7 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
         }
     })
 
-    if r.status > 0 then
+    if r.status < 0 then
         error_message('The curl request to Musixmatch failed with code ' .. r.status)
         return
     end
@@ -165,7 +165,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         }
     })
 
-    if r.status > 0 then
+    if r.status < 0 then
         error_message('The first curl request to NetEase failed with code ' .. r.status)
         return
     end
@@ -211,7 +211,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         }
     })
 
-    if r.status > 0 then
+    if r.status < 0 then
         error_message('The second curl request to NetEase failed with code ' .. r.status)
         return
     end
