@@ -1,6 +1,18 @@
-This is a collection of scripts for Unix-like systems to manage lrc synchronized lyrics of songs playings in mpv. Keybindings to synchronize lyrics with Vim are provided.
+This is a collection of scripts to manage LRC synchronized lyrics of songs playings in mpv. It provides a keybinding to download lyrics of the current song from Musixmatch, and also scripts to create and synchronize lyrics yourself with vim on Unix-like systems.
 
-`input-ipc-server=/tmp/mpv-socket` is assumed for the mpv instance that plays music and socat is required.
+## lrc.lua
+
+### musixmatch-download
+
+Downloads the lyrics of the currently playing song from Musixmatch's API.
+
+The default keybinding is `Alt+m`, and it can be changed by binding `script-message musixmatch-download`
+
+### offset-lrc
+
+(Unix-only) After adjusting `sub-delay` in mpv, this offsets the timestamps in the current LRC file accordingly (using ffmpeg). It then resets `sub-delay` and reloads the sub track so you can update the LRC again if necessary.
+
+The default keybinding is `Ctrl+o`, and it can be changed by binding `script-message offset-lrc`
 
 ## lrc.sh
 
@@ -8,7 +20,7 @@ This POSIX script creates the skeleton of a new LRC file by fetching the metadat
 
 If the current song already has an LRC file, it doesn't overwrite it, but opens it in `$EDITOR` so you can quickly fix mistakes you notice while listening to the song.
 
-Requires jq.
+`input-ipc-server=/tmp/mpv-socket` is assumed for the mpv instance that plays music, and jq and socat are required.
 
 ## lrc.vim
 
@@ -23,12 +35,6 @@ It also increases `scrolloff` to keep the cursor in the center as you synchroniz
 To use this, add `autocmd BufNewFile,BufReadPost *.lrc setfiletype lrc` to your configuration file, then just copy `lrc.vim` to `~/.config/nvim/ftplugin` or `~/.vimrc/ftplugin`. It's a tiny file anyway and you may want to change the mappings or the socket path.
 
 I recommend https://github.com/vim-scripts/lrc.vim for syntax highlighting. It errors because of carriage returns, but you can remove them with `sed -i 's/\r//' lrc.vim`
-
-## lrc.lua
-
-After adjusting `sub-delay` in mpv, the `offset-lrc` script message offsets the timestamps in the current lrc file accordingly (using ffmpeg). It then resets `sub-delay` and reloads the sub track so you can update the lrc again if necessary.
-
-The default keybinding is `Ctrl+o` and it can be changed by binding `script-message offset-lrc`
 
 ## Overlay
 
