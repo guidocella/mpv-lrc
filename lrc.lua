@@ -90,6 +90,11 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
         }
     })
 
+    if r.killed_by_us then
+        -- don't print an error when curl fails because the playlist index was changed
+        return
+    end
+
     if r.status < 0 then
         error_message('The curl request to Musixmatch failed with code ' .. r.status)
         return
@@ -165,6 +170,10 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         }
     })
 
+    if r.killed_by_us then
+        return
+    end
+
     if r.status < 0 then
         error_message('The first curl request to NetEase failed with code ' .. r.status)
         return
@@ -210,6 +219,10 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
             'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. song.id,
         }
     })
+
+    if r.killed_by_us then
+        return
+    end
 
     if r.status < 0 then
         error_message('The second curl request to NetEase failed with code ' .. r.status)
