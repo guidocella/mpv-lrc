@@ -38,7 +38,7 @@ if printf %s "$query" | grep -Eiq '([ぁ-ヺ一-龢]|KOTOKO |Ceui )'; then
     # with the lyrics and execute copy($0.innerText) in the console.
     # I personally use a qutebrowser keybinding that copies lyrics
     # from various sites. Tell me if you want me to share it.
-    query="$query 歌詞 -site:uta-net.com -site:petitlyrics.com -site:youtube.com -site:www.amazon.co.jp -site:recochoku.jp"
+    query="$query 歌詞 -site:petitlyrics.com -site:youtube.com -site:www.amazon.co.jp -site:recochoku.jp"
 else
     query="$query lyrics"
 fi
