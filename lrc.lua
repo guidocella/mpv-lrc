@@ -16,6 +16,34 @@ local function error_message(string)
     end
 end
 
+local function curl(args)
+    local r = mp.command_native({name = 'subprocess', capture_stdout = true, args = args})
+
+    if r.killed_by_us then
+        -- don't print an error when curl fails because the playlist index was changed
+        return false
+    end
+
+    if r.status < 0 then
+        error_message('subprocess error: ' .. r.error_string)
+        return false
+    end
+
+    if r.status > 0 then
+        error_message('curl failed with code ' .. r.status)
+        return false
+    end
+
+    local response, error = utils.parse_json(r.stdout)
+
+    if error then
+        error_message('Unable to parse the JSON response')
+        return false
+    end
+
+    return response
+end
+
 local function save_lyrics(lyrics)
     local current_sub_path = mp.get_property('current-tracks/sub/external-filename')
 
@@ -74,40 +102,21 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
 
     mp.osd_message('Downloading lyrics')
 
-    local r = mp.command_native({
-        name = 'subprocess',
-        capture_stdout = true,
-        args = {
-            'curl',
-            '--silent',
-            '--get',
-            '--cookie', 'x-mxm-token-guid=' .. options.musixmatch_token, -- avoids a redirect
-            'https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get',
-            '--data', 'app_id=web-desktop-app-v1.0',
-            '--data', 'usertoken=' .. options.musixmatch_token,
-            '--data-urlencode', 'q_track=' .. title,
-            '--data-urlencode', 'q_artist=' .. artist,
-        }
+    local response = curl({
+        'curl',
+        '--silent',
+        '--get',
+        '--cookie', 'x-mxm-token-guid=' .. options.musixmatch_token, -- avoids a redirect
+        'https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get',
+        '--data', 'app_id=web-desktop-app-v1.0',
+        '--data', 'usertoken=' .. options.musixmatch_token,
+        '--data-urlencode', 'q_track=' .. title,
+        '--data-urlencode', 'q_artist=' .. artist,
     })
 
-    if r.killed_by_us then
-        -- don't print an error when curl fails because the playlist index was changed
+    if not response then
         return
     end
-
-    if r.status < 0 then
-        error_message('The curl request to Musixmatch failed with code ' .. r.status)
-        return
-    end
-
-    local response, error = utils.parse_json(r.stdout)
-
-    if error then
-        error_message('Unable to parse the JSON returned by Musixmatch')
-        return
-    end
-
-    -- io.open('/tmp/musixmatch.json', 'w'):write(r.stdout)
 
     if response.message.header.status_code == 401 and response.message.header.hint == 'renew' then
         error_message('The Musixmatch token has been rate limited. script-opts/lrc.conf explains how to generate a new one.')
@@ -158,35 +167,17 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
 
     mp.osd_message('Downloading lyrics')
 
-    local r = mp.command_native({
-        name = 'subprocess',
-        capture_stdout = true,
-        args = {
-            'curl',
-            '--silent',
-            '--get',
-            'https://music.xianqiao.wang/neteaseapiv2/search?limit=10',
-            '--data-urlencode', 'keywords=' .. title .. ' ' .. artist,
-        }
+    local response = curl({
+        'curl',
+        '--silent',
+        '--get',
+        'https://music.xianqiao.wang/neteaseapiv2/search?limit=10',
+        '--data-urlencode', 'keywords=' .. title .. ' ' .. artist,
     })
 
-    if r.killed_by_us then
+    if not response then
         return
     end
-
-    if r.status < 0 then
-        error_message('The first curl request to NetEase failed with code ' .. r.status)
-        return
-    end
-
-    local response, error = utils.parse_json(r.stdout)
-
-    if error then
-        error_message('Unable to parse the JSON returned by NetEase')
-        return
-    end
-
-    -- io.open('/tmp/netease-search.json', 'w'):write(r.stdout)
 
     local songs = response.result.songs
 
@@ -210,35 +201,15 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
 
     mp.msg.verbose('Downloading NetEase lyrics for the song with id: ' .. song.id .. ', name: ' .. song.name .. ', artist: ' .. song.artists[1].name .. ', album: ' .. song.album.name)
 
-    r = mp.command_native({
-        name = 'subprocess',
-        capture_stdout = true,
-        args = {
-            'curl',
-            '--silent',
-            'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. song.id,
-        }
+    response = curl({
+        'curl',
+        '--silent',
+        'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. song.id,
     })
 
-    if r.killed_by_us then
-        return
+    if response then
+        save_lyrics(response.lrc.lyric)
     end
-
-    if r.status < 0 then
-        error_message('The second curl request to NetEase failed with code ' .. r.status)
-        return
-    end
-
-    response, error = utils.parse_json(r.stdout)
-
-    if error then
-        error_message('Unable to parse the JSON returned by NetEase')
-        return
-    end
-
-    -- io.open('/tmp/netease-song.json', 'w'):write(r.stdout)
-
-    save_lyrics(response.lrc.lyric)
 end)
 
 mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
