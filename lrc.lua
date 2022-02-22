@@ -62,8 +62,12 @@ local function save_lyrics(lyrics)
             backup:write(current_sub:read('a'))
             success_message = success_message .. '. The old one has been backupped to /tmp.'
         end
-        current_sub:close()
-        backup:close()
+        if current_sub then
+            current_sub:close()
+        end
+        if backup then
+            backup:close()
+        end
     end
 
     local path = mp.get_property('path')
