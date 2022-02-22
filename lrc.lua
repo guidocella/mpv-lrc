@@ -53,7 +53,7 @@ local function save_lyrics(lyrics)
     end
 
     local success_message = 'LRC downloaded'
-    if current_sub_path and utils.file_info('/tmp') then
+    if current_sub_path then
         -- os.rename only works across the same filesystem
         local _, current_sub_filename = utils.split_path(current_sub_path)
         local current_sub = io.open(current_sub_path)
