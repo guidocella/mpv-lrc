@@ -185,7 +185,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
 
     local songs = response.result.songs
 
-    if #songs == 0 then
+    if songs == nil or #songs == 0 then
         error_message('Lyrics not found')
         return
     end
