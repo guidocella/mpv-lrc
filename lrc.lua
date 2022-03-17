@@ -45,6 +45,11 @@ local function curl(args)
 end
 
 local function save_lyrics(lyrics)
+    if lyrics == '' then
+        error_message('Lyrics not found')
+        return
+    end
+
     local current_sub_path = mp.get_property('current-tracks/sub/external-filename')
 
     if current_sub_path and lyrics:match('^%[') == nil then
@@ -144,11 +149,6 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
             error_message('This is an instrumental track')
             return
         end
-    end
-
-    if lyrics == '' then
-        error_message('Lyrics not found')
-        return
     end
 
     save_lyrics(lyrics)
