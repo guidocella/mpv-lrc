@@ -190,6 +190,16 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         return
     end
 
+    for _, loop_song in pairs(songs) do
+        mp.msg.info(
+            'Found lyrics for the song with id ' .. loop_song.id ..
+            ', name ' .. loop_song.name ..
+            ', artist ' .. loop_song.artists[1].name ..
+            ', album ' .. loop_song.album.name ..
+            ', url https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. loop_song.id
+        )
+    end
+
     local song = songs[1]
     local album = metadata.album or metadata.ALBUM
     if album then
@@ -203,7 +213,12 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         end
     end
 
-    mp.msg.verbose('Downloading NetEase lyrics for the song with id: ' .. song.id .. ', name: ' .. song.name .. ', artist: ' .. song.artists[1].name .. ', album: ' .. song.album.name)
+    mp.msg.info(
+        'Downloading lyrics for the song with id ' .. song.id ..
+        ', name ' .. song.name ..
+        ', artist ' .. song.artists[1].name ..
+        ', album ' .. song.album.name
+    )
 
     response = curl({
         'curl',
