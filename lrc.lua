@@ -190,7 +190,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         return
     end
 
-    for _, song in pairs(songs) do
+    for _, song in ipairs(songs) do
         mp.msg.info(
             'Found lyrics for the song with id ' .. song.id ..
             ', name ' .. song.name ..
@@ -205,7 +205,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
     if album then
         album = album:lower()
 
-        for _, loop_song in pairs(songs) do
+        for _, loop_song in ipairs(songs) do
             if loop_song.album.name:lower() == album then
                 song = loop_song
                 break
