@@ -190,13 +190,13 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         return
     end
 
-    for _, loop_song in pairs(songs) do
+    for _, song in pairs(songs) do
         mp.msg.info(
-            'Found lyrics for the song with id ' .. loop_song.id ..
-            ', name ' .. loop_song.name ..
-            ', artist ' .. loop_song.artists[1].name ..
-            ', album ' .. loop_song.album.name ..
-            ', url https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. loop_song.id
+            'Found lyrics for the song with id ' .. song.id ..
+            ', name ' .. song.name ..
+            ', artist ' .. song.artists[1].name ..
+            ', album ' .. song.album.name ..
+            ', url https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. song.id
         )
     end
 
