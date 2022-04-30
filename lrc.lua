@@ -64,7 +64,7 @@ local function save_lyrics(lyrics)
         local current_sub = io.open(current_sub_path)
         local backup = io.open('/tmp/' .. current_sub_filename, 'w')
         if current_sub and backup then
-            backup:write(current_sub:read('a'))
+            backup:write(current_sub:read('*a'))
             success_message = success_message .. '. The old one has been backupped to /tmp.'
         end
         if current_sub then
