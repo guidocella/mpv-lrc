@@ -5,10 +5,6 @@ local utils = require 'mp.utils'
 
 require 'mp.options'.read_options(options)
 
-local function shell_escape(string)
-    return "'" .. string:gsub("'", "'\\''") .. "'"
-end
-
 local function error_message(string)
     mp.msg.error(string)
     if mp.get_property_native('vo-configured') then
@@ -239,15 +235,29 @@ mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
         return
     end
 
-    lrc_path = shell_escape(lrc_path)
-    if not os.execute(
-        'lrc=$(echo "[offset:' .. mp.get_property('sub-delay') * -1000 .. ']" | cat - '
-        .. lrc_path .. '| ffmpeg -i - -f lrc - |'
-        .. 'grep -Ev "\\[(re|ve):") && echo "$lrc" >' .. lrc_path
-    ) then
-        error_message('LRC update failed')
+    local r = mp.command_native({
+        name = 'subprocess',
+        capture_stdout = true,
+        args = {'ffmpeg', '-loglevel', 'quiet', '-itsoffset', mp.get_property('sub-delay'), '-i', lrc_path, '-f', 'lrc', '-'}
+    })
+
+    if r.status < 0 then
+        error_message('subprocess error: ' .. r.error_string)
         return
     end
+
+    if r.status > 0 then
+        error_message('ffmpeg failed with code ' .. r.status)
+        return
+    end
+
+    local lrc = io.open(lrc_path, 'w')
+    if lrc == nil then
+        error_message('Failed writing to ' .. lrc_path)
+        return
+    end
+    lrc:write(r.stdout:gsub('^%[re:.-\n', ''):gsub('^%[ve:.-\n', ''))
+    lrc:close()
 
     mp.set_property('sub-delay', 0)
     mp.command('sub-reload 1')

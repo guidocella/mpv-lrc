@@ -16,7 +16,7 @@ The default keybinding is `Alt+n`, and it can be changed by binding `script-mess
 
 ### offset-lrc
 
-(Unix-only) After adjusting `sub-delay` in mpv, this offsets the timestamps in the current LRC file accordingly (using ffmpeg). It then resets `sub-delay` and reloads the sub track so you can update the LRC again if necessary.
+After adjusting `sub-delay` in mpv, this offsets the timestamps in the current LRC file accordingly. It then resets `sub-delay` and reloads the sub track so you can update the LRC again if necessary. ffmpeg needs to be in `PATH` for this to work.
 
 The default keybinding is `Ctrl+o`, and it can be changed by binding `script-message offset-lrc`
 
