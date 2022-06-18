@@ -238,7 +238,7 @@ mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
     local r = mp.command_native({
         name = 'subprocess',
         capture_stdout = true,
-        args = {'ffmpeg', '-loglevel', 'quiet', '-itsoffset', mp.get_property('sub-delay'), '-i', lrc_path, '-f', 'lrc', '-'}
+        args = {'ffmpeg', '-loglevel', 'quiet', '-itsoffset', mp.get_property('sub-delay'), '-i', lrc_path, '-f', 'lrc', '-fflags', '+bitexact', '-'}
     })
 
     if r.status < 0 then
@@ -256,8 +256,7 @@ mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
         error_message('Failed writing to ' .. lrc_path)
         return
     end
-    local lyrics = r.stdout:gsub('%[re:.-\n', ''):gsub('%[ve:.-\n', '')
-    lrc:write(lyrics)
+    lrc:write(r.stdout)
     lrc:close()
 
     mp.set_property('sub-delay', 0)
