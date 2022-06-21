@@ -256,7 +256,7 @@ mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
         error_message('Failed writing to ' .. lrc_path)
         return
     end
-    lrc:write(r.stdout)
+    lrc:write(r.stdout:gsub('^[\r\n]+', ''))
     lrc:close()
 
     mp.set_property('sub-delay', 0)
