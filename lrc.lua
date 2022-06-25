@@ -260,6 +260,6 @@ mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
     lrc:close()
 
     mp.set_property('sub-delay', 0)
-    mp.command('sub-reload 1')
+    mp.command('sub-reload')
     mp.osd_message('LRC updated')
 end)
