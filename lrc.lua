@@ -227,18 +227,18 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
     end
 end)
 
-mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
-    local lrc_path = mp.get_property('current-tracks/sub/external-filename')
+mp.add_key_binding('Ctrl+o', 'offset-sub', function()
+    local sub_path = mp.get_property('current-tracks/sub/external-filename')
 
-    if not lrc_path then
-        error_message('No LRC subtitle is loaded')
+    if not sub_path then
+        error_message('No external subtitle is loaded')
         return
     end
 
     local r = mp.command_native({
         name = 'subprocess',
         capture_stdout = true,
-        args = {'ffmpeg', '-loglevel', 'quiet', '-itsoffset', mp.get_property('sub-delay'), '-i', lrc_path, '-f', 'lrc', '-fflags', '+bitexact', '-'}
+        args = {'ffmpeg', '-loglevel', 'quiet', '-itsoffset', mp.get_property('sub-delay'), '-i', sub_path, '-f', sub_path:match('[^%.]+$'), '-fflags', '+bitexact', '-'}
     })
 
     if r.status < 0 then
@@ -251,16 +251,16 @@ mp.add_key_binding('Ctrl+o', 'offset-lrc', function()
         return
     end
 
-    local lrc = io.open(lrc_path, 'w')
-    if lrc == nil then
-        error_message('Failed writing to ' .. lrc_path)
+    local sub_file = io.open(sub_path, 'w')
+    if sub_file == nil then
+        error_message('Failed writing to ' .. sub_path)
         return
     end
-    local lyrics = r.stdout:gsub('^[\r\n]+', '')
-    lrc:write(lyrics)
-    lrc:close()
+    local subs = r.stdout:gsub('^[\r\n]+', '')
+    sub_file:write(subs)
+    sub_file:close()
 
     mp.set_property('sub-delay', 0)
     mp.command('sub-reload')
-    mp.osd_message('LRC updated')
+    mp.osd_message('Subtitles updated')
 end)
