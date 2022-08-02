@@ -91,9 +91,8 @@ end
 
 mp.add_key_binding('Alt+m', 'musixmatch-download', function()
     local metadata = mp.get_property_native('metadata')
-    -- The keys are lower case in ID3 tags and upper case in Vorbis comments.
-    local title = metadata.title or metadata.TITLE
-    local artist = metadata.artist or metadata.ARTIST
+    local title = metadata.title or metadata.TITLE or metadata.Title
+    local artist = metadata.artist or metadata.ARTIST or metadata.Artist
 
     if not title then
         error_message('This song has no title metadata')
@@ -152,8 +151,8 @@ end)
 
 mp.add_key_binding('Alt+n', 'netease-download', function()
     local metadata = mp.get_property_native('metadata')
-    local title = metadata.title or metadata.TITLE
-    local artist = metadata.artist or metadata.ARTIST
+    local title = metadata.title or metadata.TITLE or metadata.Title
+    local artist = metadata.artist or metadata.ARTIST or metadata.Artist
 
     if not title then
         error_message('This song has no title metadata')
@@ -197,7 +196,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
     end
 
     local song = songs[1]
-    local album = metadata.album or metadata.ALBUM
+    local album = metadata.album or metadata.ALBUM or metadata.Album
     if album then
         album = album:lower()
 
