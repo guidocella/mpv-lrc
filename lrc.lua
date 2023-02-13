@@ -82,7 +82,7 @@ local function save_lyrics(lyrics)
     lrc:close()
 
     if lyrics:match('^%[') then
-        mp.command(current_sub_path and 'sub-reload 1' or 'rescan-external-files')
+        mp.command(current_sub_path and 'sub-reload' or 'rescan-external-files')
         mp.osd_message(success_message)
     else
         mp.osd_message('Lyrics without timestamps downloaded')
