@@ -226,7 +226,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
     end
 end)
 
-mp.add_key_binding('Ctrl+o', 'offset-sub', function()
+mp.add_key_binding('Alt+o', 'offset-sub', function()
     local sub_path = mp.get_property('current-tracks/sub/external-filename')
 
     if not sub_path then

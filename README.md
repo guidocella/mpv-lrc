@@ -18,7 +18,7 @@ The default keybinding is `Alt+n`, and it can be changed by binding `script-mess
 
 After adjusting `sub-delay` in mpv, this offsets the timestamps in the current subtitle file accordingly. It then resets `sub-delay` and reloads the subtitle track so you can offset it again if necessary. This works with any external subtitle and not just LRC. ffmpeg needs to be in `PATH` for this to work.
 
-The default keybinding is `Ctrl+o`, and it can be changed by binding `script-message offset-sub`
+The default keybinding is `Alt+o`, and it can be changed by binding `script-message offset-sub`
 
 ## lrc.sh
 
