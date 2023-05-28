@@ -5,10 +5,10 @@ local utils = require 'mp.utils'
 
 require 'mp.options'.read_options(options)
 
-local function error_message(string)
-    mp.msg.error(string)
+local function show_error(message)
+    mp.msg.error(message)
     if mp.get_property_native('vo-configured') then
-        mp.osd_message(string, 5)
+        mp.osd_message(message, 5)
     end
 end
 
@@ -21,19 +21,19 @@ local function curl(args)
     end
 
     if r.status < 0 then
-        error_message('subprocess error: ' .. r.error_string)
+        show_error('subprocess error: ' .. r.error_string)
         return false
     end
 
     if r.status > 0 then
-        error_message('curl failed with code ' .. r.status)
+        show_error('curl failed with code ' .. r.status)
         return false
     end
 
     local response, error = utils.parse_json(r.stdout)
 
     if error then
-        error_message('Unable to parse the JSON response')
+        show_error('Unable to parse the JSON response')
         return false
     end
 
@@ -42,14 +42,14 @@ end
 
 local function save_lyrics(lyrics)
     if lyrics == '' then
-        error_message('Lyrics not found')
+        show_error('Lyrics not found')
         return
     end
 
     local current_sub_path = mp.get_property('current-tracks/sub/external-filename')
 
     if current_sub_path and lyrics:match('^%[') == nil then
-        error_message("Only lyrics without timestamps are available, so the existing LRC file won't be overwritten")
+        show_error("Only lyrics without timestamps are available, so the existing LRC file won't be overwritten")
         return
     end
 
@@ -75,7 +75,7 @@ local function save_lyrics(lyrics)
     local lrc_path = (path:match('(.*)%.[^/]*$') or path) .. '.lrc'
     local lrc = io.open(lrc_path, 'w')
     if lrc == nil then
-        error_message('Failed writing to ' .. lrc_path)
+        show_error('Failed writing to ' .. lrc_path)
         return
     end
     lrc:write(lyrics)
@@ -95,12 +95,12 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
     local artist = metadata.artist or metadata.ARTIST or metadata.Artist
 
     if not title then
-        error_message('This song has no title metadata')
+        show_error('This song has no title metadata')
         return
     end
 
     if not artist then
-        error_message('This song has no artist metadata')
+        show_error('This song has no artist metadata')
         return
     end
 
@@ -123,12 +123,12 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
     end
 
     if response.message.header.status_code == 401 and response.message.header.hint == 'renew' then
-        error_message('The Musixmatch token has been rate limited. script-opts/lrc.conf explains how to generate a new one.')
+        show_error('The Musixmatch token has been rate limited. script-opts/lrc.conf explains how to generate a new one.')
         return
     end
 
     if response.message.header.status_code ~= 200 then
-        error_message('Request failed with status code ' .. response.message.header.status_code .. '. Hint: ' .. response.message.header.hint)
+        show_error('Request failed with status code ' .. response.message.header.status_code .. '. Hint: ' .. response.message.header.hint)
         return
     end
 
@@ -141,7 +141,7 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
         elseif body['matcher.track.get'].message.body.track.has_lyrics == 1 then -- lyrics without timestamps
             lyrics = body['track.lyrics.get'].message.body.lyrics.lyrics_body
         elseif body['matcher.track.get'].message.body.track.instrumental == 1 then
-            error_message('This is an instrumental track')
+            show_error('This is an instrumental track')
             return
         end
     end
@@ -155,12 +155,12 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
     local artist = metadata.artist or metadata.ARTIST or metadata.Artist
 
     if not title then
-        error_message('This song has no title metadata')
+        show_error('This song has no title metadata')
         return
     end
 
     if not artist then
-        error_message('This song has no artist metadata')
+        show_error('This song has no artist metadata')
         return
     end
 
@@ -181,7 +181,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
     local songs = response.result.songs
 
     if songs == nil or #songs == 0 then
-        error_message('Lyrics not found')
+        show_error('Lyrics not found')
         return
     end
 
@@ -230,7 +230,7 @@ mp.add_key_binding('Alt+o', 'offset-sub', function()
     local sub_path = mp.get_property('current-tracks/sub/external-filename')
 
     if not sub_path then
-        error_message('No external subtitle is loaded')
+        show_error('No external subtitle is loaded')
         return
     end
 
@@ -241,18 +241,18 @@ mp.add_key_binding('Alt+o', 'offset-sub', function()
     })
 
     if r.status < 0 then
-        error_message('subprocess error: ' .. r.error_string)
+        show_error('subprocess error: ' .. r.error_string)
         return
     end
 
     if r.status > 0 then
-        error_message('ffmpeg failed with code ' .. r.status)
+        show_error('ffmpeg failed with code ' .. r.status)
         return
     end
 
     local sub_file = io.open(sub_path, 'w')
     if sub_file == nil then
-        error_message('Failed writing to ' .. sub_path)
+        show_error('Failed writing to ' .. sub_path)
         return
     end
     local subs = r.stdout:gsub('^[\r\n]+', '')
