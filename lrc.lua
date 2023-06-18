@@ -53,6 +53,9 @@ local function save_lyrics(lyrics)
         return
     end
 
+    -- NetEase's LRCs can have 3-digit milliseconds, which messes up the sub's timings in mpv.
+    lyrics = lyrics:gsub('(%.%d%d)%d]', '%1]')
+
     local success_message = 'LRC downloaded'
     if current_sub_path then
         -- os.rename only works across the same filesystem
