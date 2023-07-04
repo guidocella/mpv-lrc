@@ -44,7 +44,7 @@ I recommend https://github.com/vim-scripts/lrc.vim for syntax highlighting. It e
 
 ## Overlay
 
-If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyrics in a transparent overlay with `--background=0/0 --alpha --ontop`.
+If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyrics in a transparent overlay with `--background=0/0 --alpha --ontop --input-cursor-passthrough`.
 
 ## Note on using LRC files from Minilyrics in mpv
 
