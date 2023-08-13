@@ -41,12 +41,11 @@ else
     query="$query lyrics"
 fi
 
-${BROWSER:-chromium} "https://duckduckgo.com/?q=\\$query" 2>/dev/null &
+case ${BROWSER:=chromium} in
+    *chrom*) query="? $query" ;;
+    firefox) BROWSER="$BROWSER --search"
+esac
 
-if [ "$WAYLAND_DISPLAY" ] && command -v wl-copy >/dev/null; then
-    wl-copy -- "$query"
-elif command -v xclip >/dev/null; then
-    printf %s "$query" | xclip -selection clipboard
-fi
+$BROWSER "$query" 2>/dev/null &
 
 exec $EDITOR + "$lrc_path"
