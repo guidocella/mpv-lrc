@@ -23,6 +23,7 @@ printf %s "[ar:$artist]
 [ti:$title]
 $album[by:$1]
 
+
 " > "$lrc_path"
 
 query="$artist $title"
