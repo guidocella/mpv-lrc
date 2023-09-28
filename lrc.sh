@@ -18,14 +18,10 @@ title=$(printf %s "$metadata" | jq -r 'if has("title") then .title else .TITLE e
 album=$(printf %s "$metadata" | jq -r 'if has("album") then .album else .ALBUM end')
 [ "$album" = null ] && album= || album="[album:$album]
 "
-duration=$(printf %s\\n '{ "command": ["get_property", "duration"] }' | socat - /tmp/mpv-socket | jq .data)
-seconds=${duration%.*}
-length=$(printf %02d $(( seconds / 60 ))):$(printf %02d $(( seconds % 60 )))
 
 printf %s "[ar:$artist]
 [ti:$title]
-$album[length:$length]
-[by:$1]
+$album[by:$1]
 
 " > "$lrc_path"
 
