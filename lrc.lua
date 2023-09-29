@@ -48,7 +48,7 @@ local function save_lyrics(lyrics)
 
     local current_sub_path = mp.get_property('current-tracks/sub/external-filename')
 
-    if current_sub_path and lyrics:match('^%[') == nil then
+    if current_sub_path and lyrics:find('^%[') == nil then
         show_error("Only lyrics without timestamps are available, so the existing LRC file won't be overwritten")
         return
     end
@@ -84,7 +84,7 @@ local function save_lyrics(lyrics)
     lrc:write(lyrics)
     lrc:close()
 
-    if lyrics:match('^%[') then
+    if lyrics:find('^%[') then
         mp.command(current_sub_path and 'sub-reload' or 'rescan-external-files')
         mp.osd_message(success_message)
     else
