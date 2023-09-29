@@ -40,6 +40,25 @@ local function curl(args)
     return response
 end
 
+local function get_metadata()
+    local metadata = mp.get_property_native('metadata')
+    local title = metadata.title or metadata.TITLE or metadata.Title
+    local artist = metadata.artist or metadata.ARTIST or metadata.Artist
+    local album = metadata.album or metadata.ALBUM or metadata.Album
+
+    if not title then
+        show_error('This song has no title metadata')
+        return false
+    end
+
+    if not artist then
+        show_error('This song has no artist metadata')
+        return false
+    end
+
+    return title, artist, album
+end
+
 local function save_lyrics(lyrics)
     if lyrics == '' then
         show_error('Lyrics not found')
@@ -93,17 +112,9 @@ local function save_lyrics(lyrics)
 end
 
 mp.add_key_binding('Alt+m', 'musixmatch-download', function()
-    local metadata = mp.get_property_native('metadata')
-    local title = metadata.title or metadata.TITLE or metadata.Title
-    local artist = metadata.artist or metadata.ARTIST or metadata.Artist
+    local title, artist = get_metadata()
 
     if not title then
-        show_error('This song has no title metadata')
-        return
-    end
-
-    if not artist then
-        show_error('This song has no artist metadata')
         return
     end
 
@@ -153,17 +164,9 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
 end)
 
 mp.add_key_binding('Alt+n', 'netease-download', function()
-    local metadata = mp.get_property_native('metadata')
-    local title = metadata.title or metadata.TITLE or metadata.Title
-    local artist = metadata.artist or metadata.ARTIST or metadata.Artist
+    local title, artist, album = get_metadata()
 
     if not title then
-        show_error('This song has no title metadata')
-        return
-    end
-
-    if not artist then
-        show_error('This song has no artist metadata')
         return
     end
 
@@ -199,7 +202,6 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
     end
 
     local song = songs[1]
-    local album = metadata.album or metadata.ALBUM or metadata.Album
     if album then
         album = album:lower()
 
