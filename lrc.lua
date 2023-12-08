@@ -260,6 +260,7 @@ mp.add_key_binding('Alt+o', 'offset-sub', function()
         show_error('Failed writing to ' .. sub_path)
         return
     end
+    -- ffmpeg leaves a blank line at the top if there is no metadata, so strip it.
     local subs = r.stdout:gsub('^\n', '')
     sub_file:write(subs)
     sub_file:close()
