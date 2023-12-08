@@ -47,14 +47,3 @@ I recommend https://github.com/vim-scripts/lrc.vim for syntax highlighting. It e
 ## Overlay
 
 If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyrics in a transparent overlay with `--background=0/0 --alpha --ontop --input-cursor-passthrough`.
-
-## Note on using LRC files from Minilyrics in mpv
-
-ffmpeg doesn't detect LRC files if [id:...] is the first line. id tags can be removed with `sed -i '/\[id:/d' *.lrc`
-
-ffmpeg doesn't detect LRC files encoded in UTF-16. They can be converted to UTF-8 with:
-`for lrc in *.lrc; do if file $lrc | grep -q UTF-16; then iconv -f UTF-16 -t UTF-8 $lrc -o $lrc; fi; done`
-
-ffmpeg doesn't detect LRC files missing the milliseconds. You can add them with `sed -i '/\[[0-9]/s/]/.00]/' foo.lrc`
-
-ffmpeg also splits lines like `[01:00.00][02:00.00]foo` which mpv shows only the first time, and removes blank lines and Windows carriage returns.
