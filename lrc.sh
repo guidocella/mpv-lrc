@@ -29,11 +29,9 @@ $album[by:$1]
 query="$artist $title"
 
 if printf %s "$query" | grep -Eiq '([ぁ-ヺ一-龢]|KOTOKO |Ceui )'; then
-    # Exclude sites that serve lyrics as images and some non-lyrics sites
-    # that Duckduckgo occasionally returns as the first result.
     # When sites try to block copying text, you can inspect the HTML element
     # with the lyrics and execute copy($0.innerText) in the console.
-    query="$query 歌詞 -site:petitlyrics.com -site:youtube.com -site:www.amazon.co.jp -site:recochoku.jp"
+    query="$query 歌詞"
 else
     query="$query lyrics"
 fi
