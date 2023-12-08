@@ -260,7 +260,7 @@ mp.add_key_binding('Alt+o', 'offset-sub', function()
         show_error('Failed writing to ' .. sub_path)
         return
     end
-    local subs = r.stdout:gsub('^[\r\n]+', '')
+    local subs = r.stdout:gsub('^\n', '')
     sub_file:write(subs)
     sub_file:close()
 
