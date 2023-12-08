@@ -20,7 +20,13 @@ After adjusting `sub-delay` in mpv, this offsets the timestamps in the current s
 
 The default keybinding is `Alt+o`, and it can be changed by binding `script-message offset-sub`
 
-## lrc.sh
+## Overlay
+
+If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyrics in a transparent overlay with `--background=0/0 --alpha --ontop --input-cursor-passthrough`.
+
+## Synchronizing lyrics
+
+### lrc.sh
 
 This POSIX script creates the skeleton of a new LRC file by fetching the metadata of the song playing in mpv and your nickname from the first argument to it, and opens it in `$EDITOR`. It also opens `$BROWSER`, falling back to chromium if that is not defined, pointing it to search page for the lyrics in the browser's default search engine. When it detects Japanese characters in the song path, it searches for lyrics in Japanese.
 
@@ -30,7 +36,7 @@ If the current song already has an LRC file, it doesn't overwrite it, but opens 
 
 `input-ipc-server=/tmp/mpv-socket` is assumed for the mpv instance that plays music, and jq and socat are required.
 
-## lrc.vim
+### lrc.vim
 
 This provides the following keybindings:
 
@@ -43,7 +49,3 @@ It also increases `scrolloff` to keep the cursor in the center as you synchroniz
 To use this, add `autocmd BufNewFile,BufReadPost *.lrc setfiletype lrc` to your configuration file, then copy `lrc.vim` to `~/.config/nvim/ftplugin` or `~/.vimrc/ftplugin`.
 
 I recommend https://github.com/vim-scripts/lrc.vim for syntax highlighting. It errors because of carriage returns, but you can remove them with `sed -i 's/\r//' lrc.vim`
-
-## Overlay
-
-If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyrics in a transparent overlay with `--background=0/0 --alpha --ontop --input-cursor-passthrough`.
