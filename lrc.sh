@@ -29,8 +29,6 @@ $album[by:$1]
 query="$artist $title"
 
 if printf %s "$query" | grep -Eiq '([ぁ-ヺ一-龢]|KOTOKO |Ceui )'; then
-    # When sites try to block copying text, you can inspect the HTML element
-    # with the lyrics and execute copy($0.innerText) in the console.
     query="$query 歌詞"
 else
     query="$query lyrics"
