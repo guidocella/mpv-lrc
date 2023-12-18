@@ -40,7 +40,7 @@ If the current song already has an LRC file, it doesn't overwrite it, but opens 
 
 This provides the following keybindings:
 
-* `F7` Prepend the current timestamp of a song to the current line.
+* `F7` Prepend the current timestamp, with 0.3 seconds subtracted, to the current line. The 0.3 offset is fairly high and is chosen so that when you don't react immediately to a line you still have time to press `F7` without having to seek backwards, but when you are ready to react immediately it is better to wait a little before pressing it.
 * `F8` Seek backwards 2 seconds.
 * `F6` Insert a timestamp equals to the one above minus 1/100th of a second in a blank line that is 2 lines above. When you have to synchronize a blank line between 2 lines with little delay between them, synchronize only the next filled line and use this.
 
