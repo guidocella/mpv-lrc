@@ -1,7 +1,10 @@
 #!/bin/sh
 
-lrc_path=$(printf %s\\n '{ "command": ["get_property", "path"] }' | socat - /tmp/mpv-socket | jq -r .data)
-[ "$lrc_path" ] || exit 1
+lrc_path=$(printf %s\\n '{ "command": ["get_property", "path"] }' | socat - UNIX-CONNECT:/tmp/mpv-socket) || exit 1
+
+lrc_path=$(printf %s "$lrc_path" | jq -r .data)
+[ "$lrc_path" = null ] && exit 1
+
 lrc_path=${lrc_path%.*}.lrc
 case $lrc_path in
     /*) ;;
