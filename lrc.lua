@@ -1,5 +1,6 @@
 local options = {
     musixmatch_token = '220215b052d6aeaa3e9a410986f6c3ae7ea9f5238731cb918d05ea',
+    mark_as_ja = false,
 }
 local utils = require 'mp.utils'
 
@@ -59,6 +60,29 @@ local function get_metadata()
     return title, artist, album
 end
 
+local function is_japanese(lyrics)
+    -- http://lua-users.org/wiki/LuaUnicode Lua patterns don't support Unicode
+    -- ranges, and you can't even iterate over \u{XXX} sequences in Lua 5.1 and
+    -- 5.2, so just search for some Hiragana characters.
+
+    for _, kana in pairs({
+        'あ', 'い', 'う', 'え', 'お',
+        'か', 'き', 'く', 'け', 'こ',
+        'さ', 'し', 'す', 'せ', 'そ',
+        'た', 'ち', 'つ', 'て', 'と',
+        'な', 'に', 'ぬ', 'ね', 'の',
+        'は', 'ひ', 'ふ', 'へ', 'ほ',
+        'ま', 'み', 'む', 'め', 'も',
+        'や',       'ゆ',       'よ',
+        'ら', 'り', 'る', 'れ', 'ろ',
+        'わ',                   'を',
+    }) do
+        if lyrics:find(kana) then
+            return true
+        end
+    end
+end
+
 local function save_lyrics(lyrics)
     if lyrics == '' then
         show_error('Lyrics not found')
@@ -94,7 +118,13 @@ local function save_lyrics(lyrics)
     end
 
     local path = mp.get_property('path')
-    local lrc_path = (path:match('(.*)%.[^/]*$') or path) .. '.lrc'
+    local lrc_path = (path:match('(.*)%.[^/]*$') or path)
+    if is_japanese(lyrics) then
+        if options.mark_as_ja then
+            lrc_path = lrc_path .. '.ja'
+        end
+    end
+    lrc_path = lrc_path .. '.lrc'
     local lrc = io.open(lrc_path, 'w')
     if lrc == nil then
         show_error('Failed writing to ' .. lrc_path)

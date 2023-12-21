@@ -12,6 +12,7 @@ case $lrc_path in
 esac
 
 [ -e "$lrc_path" ] && exec $EDITOR "$lrc_path"
+[ -e "${lrc_path%.*}.ja.lrc" ] && exec $EDITOR "${lrc_path%.*}.ja.lrc"
 
 metadata=$(printf %s\\n '{ "command": ["get_property", "metadata"] }' \
     | socat - /tmp/mpv-socket | jq .data)
