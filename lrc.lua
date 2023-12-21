@@ -242,7 +242,53 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
     save_lyrics(lyrics)
 end)
 
+local songs
+local result, input = pcall(require, 'mp.input')
+if not result then
+    input = nil
+end
+
+local function select_netease_lyrics()
+    input.get({
+        prompt = 'Enter a song number:',
+        opened = function ()
+            local log = {}
+            for index, song in ipairs(songs) do
+                log[#log+1] = index .. ' ' .. song.artists[1].name .. ' - ' ..
+                    song.name .. ' (' .. song.album.name .. ')'
+            end
+
+            input.set_log(log)
+        end,
+        submit = function(text)
+            local song = songs[tonumber(text)]
+            if song == nil then
+                input.log_error('Enter a number from 1 to ' .. #songs)
+                return
+            end
+
+            input.terminate()
+
+            local response = curl({
+                'curl',
+                '--silent',
+                'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. song.id,
+            })
+
+            if response then
+                save_lyrics(response.lrc.lyric)
+            end
+        end
+    })
+end
+
 mp.add_key_binding('Alt+n', 'netease-download', function()
+    if songs and input then
+        select_netease_lyrics()
+
+        return
+    end
+
     local title, artist, album = get_metadata()
 
     if not title then
@@ -255,7 +301,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         'curl',
         '--silent',
         '--get',
-        'https://music.xianqiao.wang/neteaseapiv2/search?limit=10',
+        'https://music.xianqiao.wang/neteaseapiv2/search?limit=9',
         '--data-urlencode', 'keywords=' .. title .. ' ' .. artist,
     })
 
@@ -263,10 +309,30 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         return
     end
 
-    local songs = response.result.songs
+    songs = response.result.songs
 
     if songs == nil or #songs == 0 then
         show_error('Lyrics not found')
+        return
+    end
+
+    if input then
+        if #songs == 1 then
+            response = curl({
+                'curl',
+                '--silent',
+                'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. songs[1].id,
+            })
+
+            if response then
+                save_lyrics(response.lrc.lyric)
+            end
+
+            return
+        end
+
+        select_netease_lyrics()
+
         return
     end
 
@@ -309,6 +375,12 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         save_lyrics(response.lrc.lyric)
     end
 end)
+
+if input then
+    mp.register_event('end-file', function()
+        songs = nil
+    end)
+end
 
 mp.add_key_binding('Alt+o', 'offset-sub', function()
     local sub_path = mp.get_property('current-tracks/sub/external-filename')
