@@ -1,6 +1,7 @@
 local options = {
     musixmatch_token = '220215b052d6aeaa3e9a410986f6c3ae7ea9f5238731cb918d05ea',
     mark_as_ja = false,
+    chinese_to_kanji_path = '',
 }
 local utils = require 'mp.utils'
 
@@ -83,6 +84,51 @@ local function is_japanese(lyrics)
     end
 end
 
+local function chinese_to_kanji(lyrics)
+    local mappings, error = io.open(
+        mp.command_native({'expand-path', options.chinese_to_kanji_path})
+    )
+
+    if mappings == nil then
+        show_error(error)
+        return lyrics
+    end
+
+    -- Save the original lyrics to compare them.
+    local original = io.open('/tmp/original.lrc', 'w')
+    if original then
+        original:write(lyrics)
+        original:close()
+    end
+
+    for mapping in mappings:lines() do
+        local num_matches
+
+        -- gsub on Unicode lyrics seems to stop at the first match. I have
+        -- no idea why this works.
+        repeat
+            lyrics, num_matches = lyrics:gsub(
+                mapping:gsub(' .*', ''),
+                mapping:gsub('.* ', '')
+            )
+        until num_matches == 0
+    end
+
+    mappings:close()
+
+    -- Also remove the pointless owari line when present.
+    for _, pattern in pairs({
+        'おわり',
+        '【 おわり 】',
+        ' ?終わり',
+        '終わる',
+    }) do
+        lyrics = lyrics:gsub(']' .. pattern .. '\n', ']\n')
+    end
+
+    return lyrics
+end
+
 local function save_lyrics(lyrics)
     if lyrics == '' then
         show_error('Lyrics not found')
@@ -122,6 +168,9 @@ local function save_lyrics(lyrics)
     if is_japanese(lyrics) then
         if options.mark_as_ja then
             lrc_path = lrc_path .. '.ja'
+        end
+        if options.chinese_to_kanji_path ~= '' then
+            lyrics = chinese_to_kanji(lyrics)
         end
     end
     lrc_path = lrc_path .. '.lrc'
