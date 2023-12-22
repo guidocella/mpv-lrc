@@ -174,9 +174,9 @@ local function save_lyrics(lyrics)
         end
     end
     lrc_path = lrc_path .. '.lrc'
-    local lrc = io.open(lrc_path, 'w')
+    local lrc, error = io.open(lrc_path, 'w')
     if lrc == nil then
-        show_error('Failed writing to ' .. lrc_path)
+        show_error(error)
         return
     end
     lrc:write(lyrics)
@@ -406,9 +406,9 @@ mp.add_key_binding('Alt+o', 'offset-sub', function()
         return
     end
 
-    local sub_file = io.open(sub_path, 'w')
+    local sub_file, error = io.open(sub_path, 'w')
     if sub_file == nil then
-        show_error('Failed writing to ' .. sub_path)
+        show_error(error)
         return
     end
     -- ffmpeg leaves a blank line at the top if there is no metadata, so strip it.
