@@ -31,7 +31,8 @@ $album[by:$1]
 
 query="$artist $title"
 
-if printf %s "$query" | grep -Eiq '([ぁ-ヺ一-龢]|KOTOKO |Ceui )'; then
+# grep -P can be unavailable
+if printf %s "$query" | perl -nC -e 'exit(not /[\p{Hiragana}\p{Katakana}\p{Han}]/)'; then
     query="$query 歌詞"
 else
     query="$query lyrics"
