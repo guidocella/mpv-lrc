@@ -309,6 +309,11 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         return
     end
 
+    if not response.result then
+        show_error('Lyrics not found')
+        return
+    end
+
     songs = response.result.songs
 
     if songs == nil or #songs == 0 then
