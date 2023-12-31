@@ -417,8 +417,7 @@ mp.add_key_binding('Alt+o', 'offset-sub', function()
         return
     end
     -- ffmpeg leaves a blank line at the top if there is no metadata, so strip it.
-    local subs = r.stdout:gsub('^\n', '')
-    sub_file:write(subs)
+    sub_file:write((r.stdout:gsub('^\n', '')))
     sub_file:close()
 
     mp.set_property('sub-delay', 0)
