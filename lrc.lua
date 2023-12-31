@@ -389,16 +389,23 @@ end
 
 mp.add_key_binding('Alt+o', 'offset-sub', function()
     local sub_path = mp.get_property('current-tracks/sub/external-filename')
+    local delay = mp.get_property_native('sub-delay')
 
     if not sub_path then
         show_error('No external subtitle is loaded')
         return
     end
 
+    if delay == 0 then
+        mp.command('sub-reload')
+        mp.osd_message('Subtitles reloaded')
+        return
+    end
+
     local r = mp.command_native({
         name = 'subprocess',
         capture_stdout = true,
-        args = {'ffmpeg', '-loglevel', 'quiet', '-itsoffset', mp.get_property('sub-delay'), '-i', sub_path, '-f', sub_path:match('[^%.]+$'), '-fflags', '+bitexact', '-'}
+        args = {'ffmpeg', '-loglevel', 'quiet', '-itsoffset', delay, '-i', sub_path, '-f', sub_path:match('[^%.]+$'), '-fflags', '+bitexact', '-'}
     })
 
     if r.status < 0 then
