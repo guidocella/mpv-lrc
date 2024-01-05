@@ -12,6 +12,8 @@ The default keybinding is `Alt+m`, and it can be changed by binding `script-mess
 
 Downloads the lyrics of the currently playing song from NetEase's API. It has more Japanese lyrics than Musixmatch.
 
+NetEase's API doesn't return lyrics directly, but a list of matching entries. `lrc.lua` fetches the first 9, and if mpv is new enough to support `mp.input`, it makes you select which one to download, or download directly when there's only 1 match. If `mp.input` is not supported, it downloads the first LRC whose album matches, or the first one if no entry's album matches.
+
 The default keybinding is `Alt+n`, and it can be changed by binding `script-message netease-download`
 
 ### offset-sub
