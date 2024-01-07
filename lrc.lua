@@ -389,14 +389,14 @@ end
 
 mp.add_key_binding('Alt+o', 'offset-sub', function()
     local sub_path = mp.get_property('current-tracks/sub/external-filename')
-    local delay = mp.get_property('sub-delay')
+    local delay = mp.get_property_native('sub-delay')
 
     if not sub_path then
         show_error('No external subtitle is loaded')
         return
     end
 
-    if delay == '0' then
+    if delay == 0 then
         mp.command('sub-reload')
         mp.osd_message('Subtitles reloaded')
         return
