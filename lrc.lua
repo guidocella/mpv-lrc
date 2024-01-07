@@ -405,7 +405,7 @@ mp.add_key_binding('Alt+o', 'offset-sub', function()
     local r = mp.command_native({
         name = 'subprocess',
         capture_stdout = true,
-        args = {'ffmpeg', '-loglevel', 'quiet', '-itsoffset', delay, '-i', sub_path, '-f', sub_path:match('[^%.]+$'), '-fflags', '+bitexact', '-'}
+        args = {'ffmpeg', '-loglevel', 'quiet', '-itsoffset', tostring(delay), '-i', sub_path, '-f', sub_path:match('[^%.]+$'), '-fflags', '+bitexact', '-'}
     })
 
     if r.status < 0 then
