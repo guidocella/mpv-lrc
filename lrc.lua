@@ -396,7 +396,7 @@ mp.add_key_binding('Alt+o', 'offset-sub', function()
         return
     end
 
-    if delay == 0 then
+    if math.abs(delay) < 1e-8 then
         mp.command('sub-reload')
         mp.osd_message('Subtitles reloaded')
         return
