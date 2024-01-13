@@ -32,11 +32,15 @@ If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyric
 
 This POSIX script creates the skeleton of a new LRC file by fetching the metadata of the song playing in mpv and your nickname from the first argument to it, and opens it in `$EDITOR`. It also opens `$BROWSER`, falling back to chromium if that is not defined, pointing it to the search page for the lyrics in the browser's default search engine. When it detects Japanese characters in the song path, it searches for lyrics in Japanese.
 
+`input-ipc-server=/tmp/mpv-socket` is assumed for the mpv instance that plays music, and jq and socat are required.
+
 When lyrics sites try to block copying text, you can inspect the HTML element with the lyrics and execute `copy($0.innerText)` in the console.
 
-If the current song already has an LRC file, it doesn't overwrite it, but opens it in `$EDITOR` so you can quickly fix mistakes you notice while listening to the song.
+If the current song already has an LRC file, it doesn't overwrite it, but opens it in `$EDITOR` so you can quickly fix mistakes you notice while listening to the song. You can see the changes immediately with this vim autocommand:
 
-`input-ipc-server=/tmp/mpv-socket` is assumed for the mpv instance that plays music, and jq and socat are required.
+```vim
+autocmd BufWritePost *.lrc silent !echo sub-reload | socat - /tmp/mpv-socket
+```
 
 ### lrc.vim
 
