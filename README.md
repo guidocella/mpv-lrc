@@ -30,7 +30,7 @@ If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyric
 
 ### lrc.sh
 
-This POSIX script creates the skeleton of a new LRC file by fetching the metadata of the song playing in mpv and your nickname from the first argument to it, and opens it in `$EDITOR`. It also opens `$BROWSER`, falling back to chromium if that is not defined, pointing it to the search page for the lyrics in the browser's default search engine. When it detects Japanese characters in the song path, it searches for lyrics in Japanese.
+This POSIX script fetches the metadata of the song playing in mpv, opens an LRC file with the same path as the song in `$EDITOR`, and opens `$BROWSER`, falling back to chromium if that is not defined, in the search page for the lyrics in the browser's default search engine. When it detects Japanese characters in the song path, it searches for lyrics in Japanese.
 
 `input-ipc-server=/tmp/mpv-socket` is assumed for the mpv instance that plays music, and jq and socat are required.
 

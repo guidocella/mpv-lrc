@@ -19,16 +19,6 @@ metadata=$(printf %s\\n '{ "command": ["get_property", "metadata"] }' \
 # The keys are lower case in ID3 tags and upper case in Vorbis comments.
 artist=$(printf %s "$metadata" | jq -r 'if has("artist") then .artist else .ARTIST end')
 title=$(printf %s "$metadata" | jq -r 'if has("title") then .title else .TITLE end')
-album=$(printf %s "$metadata" | jq -r 'if has("album") then .album else .ALBUM end')
-[ "$album" = null ] && album= || album="[album:$album]
-"
-
-printf %s "[ar:$artist]
-[ti:$title]
-$album[by:$1]
-
-
-" > "$lrc_path"
 
 query="$artist $title"
 
