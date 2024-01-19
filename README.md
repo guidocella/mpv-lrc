@@ -24,7 +24,7 @@ The default keybinding is `Alt+o`, and it can be changed by binding `script-mess
 
 ## Overlay
 
-If you use X11 with Nvidia proprietary drivers or Wayland, you can display lyrics in a transparent overlay with `--background=0/0 --alpha --ontop --input-cursor-passthrough`.
+If mpv supports background transparency on your platform, you can display lyrics in a transparent overlay with `--background=0/0 --alpha --ontop --input-cursor-passthrough`.
 
 ## Synchronizing lyrics
 
