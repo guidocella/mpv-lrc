@@ -54,4 +54,4 @@ It also increases `scrolloff` to keep the cursor in the center as you synchroniz
 
 To use this, add `autocmd BufNewFile,BufReadPost *.lrc setfiletype lrc` to your configuration file, then copy `lrc.vim` to `~/.config/nvim/ftplugin` or `~/.vimrc/ftplugin`.
 
-I recommend https://github.com/vim-scripts/lrc.vim for syntax highlighting. It errors because of carriage returns, but you can remove them with `sed -i 's/\r//' lrc.vim`
+https://github.com/vim-scripts/lrc.vim provides syntax highlighting. It errors because of carriage returns, but you can remove them with `sed -i 's/\r//' lrc.vim`
