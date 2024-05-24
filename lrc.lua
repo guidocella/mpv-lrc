@@ -19,24 +19,24 @@ local function curl(args)
 
     if r.killed_by_us then
         -- don't print an error when curl fails because the playlist index was changed
-        return false
+        return
     end
 
     if r.status < 0 then
         show_error('subprocess error: ' .. r.error_string)
-        return false
+        return
     end
 
     if r.status > 0 then
         show_error('curl failed with code ' .. r.status)
-        return false
+        return
     end
 
     local response, error = utils.parse_json(r.stdout)
 
     if error then
         show_error('Unable to parse the JSON response')
-        return false
+        return
     end
 
     return response
@@ -47,7 +47,7 @@ local function get_metadata()
 
     if metadata == nil then
         show_error('Metadata not yet loaded')
-        return false
+        return
     end
 
     local title = metadata.title or metadata.TITLE or metadata.Title
@@ -56,12 +56,12 @@ local function get_metadata()
 
     if not title then
         show_error('This song has no title metadata')
-        return false
+        return
     end
 
     if not artist then
         show_error('This song has no artist metadata')
-        return false
+        return
     end
 
     return title, artist, album
