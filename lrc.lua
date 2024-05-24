@@ -44,6 +44,12 @@ end
 
 local function get_metadata()
     local metadata = mp.get_property_native('metadata')
+
+    if metadata == nil then
+        show_error('Metadata not yet loaded')
+        return false
+    end
+
     local title = metadata.title or metadata.TITLE or metadata.Title
     local artist = metadata.artist or metadata.ARTIST or metadata.Artist
     local album = metadata.album or metadata.ALBUM or metadata.Album
