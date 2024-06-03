@@ -128,6 +128,7 @@ local function chinese_to_kanji(lyrics)
         '【 おわり 】',
         ' ?終わり',
         '終わる',
+        'END',
     }) do
         lyrics = lyrics:gsub(']' .. pattern .. '\n', ']\n')
     end
