@@ -137,7 +137,8 @@ local function chinese_to_kanji(lyrics)
 end
 
 local function save_lyrics(lyrics)
-    if lyrics == '' then
+    -- NetEase can return 2-line LRCs with just the names of the artists, treat them as not found.
+    if lyrics == '' or select(2, lyrics:gsub('\n', '')) == 2 then
         show_error('Lyrics not found')
         return
     end
