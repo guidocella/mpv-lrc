@@ -46,8 +46,7 @@ local function get_metadata()
     local metadata = mp.get_property_native('metadata')
 
     if metadata == nil then
-        show_error('Metadata not yet loaded')
-        return
+        return false, 'Metadata not yet loaded'
     end
 
     local title = metadata.title or metadata.TITLE or metadata.Title
@@ -55,13 +54,11 @@ local function get_metadata()
     local album = metadata.album or metadata.ALBUM or metadata.Album
 
     if not title then
-        show_error('This song has no title metadata')
-        return
+        return false, 'This song has no title metadata'
     end
 
     if not artist then
-        show_error('This song has no artist metadata')
-        return
+        return false, 'This song has no artist metadata'
     end
 
     return title, artist, album
@@ -201,7 +198,8 @@ end
 mp.add_key_binding('Alt+m', 'musixmatch-download', function()
     local title, artist = get_metadata()
 
-    if not title then
+    if title == false then
+        show_error(artist)
         return
     end
 
@@ -298,9 +296,15 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
     end
 
     local title, artist, album = get_metadata()
-
-    if not title then
-        return
+    local keywords
+    if title then
+        keywords = title .. ' ' .. artist
+    else
+        keywords = mp.get_property('media-title')
+        if not keywords then
+            show_error('No metadata or media-title are loaded')
+            return
+        end
     end
 
     mp.osd_message('Downloading lyrics')
@@ -310,7 +314,7 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         '--silent',
         '--get',
         'https://music.xianqiao.wang/neteaseapiv2/search?limit=9',
-        '--data-urlencode', 'keywords=' .. title .. ' ' .. artist,
+        '--data-urlencode', 'keywords=' .. keywords,
     })
 
     if not response then

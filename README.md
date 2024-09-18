@@ -14,6 +14,8 @@ Downloads the lyrics of the currently playing song from NetEase's API. It has mo
 
 NetEase's API doesn't return lyrics directly, but a list of matching entries. `lrc.lua` fetches the first 9, and if mpv's version is >= 0.38, it makes you select which one to download from the console, or download directly when there's only 1 match. Otherwise it downloads the first LRC whose album matches, or the first one if no entry's album matches.
 
+While Musixmatch requires artist metadata, `netease-download` fallsback to querying by `media-title` if metadata is unavailable.
+
 The default keybinding is `Alt+n`, and it can be changed by binding `script-message netease-download`
 
 ### offset-sub
