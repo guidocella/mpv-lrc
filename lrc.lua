@@ -408,6 +408,12 @@ if input then
     mp.register_event('end-file', function()
         songs = nil
     end)
+
+    -- Allow retrieving different lyrics after changing media-title in the
+    -- console.
+    mp.observe_property('force-media-title', 'native', function()
+        songs = nil
+    end)
 end
 
 mp.add_key_binding('Alt+o', 'offset-sub', function()
