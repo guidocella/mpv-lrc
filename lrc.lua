@@ -150,6 +150,28 @@ local function save_lyrics(lyrics)
     -- NetEase's LRCs can have 3-digit milliseconds, which messes up the sub's timings in mpv.
     lyrics = lyrics:gsub('(%.%d%d)%d]', '%1]')
 
+    local path = mp.get_property('path')
+    local lrc_path = (path:match('(.*)%.[^/]*$') or path)
+    if is_japanese(lyrics) then
+        if options.mark_as_ja then
+            lrc_path = lrc_path .. '.ja'
+        end
+        if options.chinese_to_kanji_path ~= '' then
+            lyrics = chinese_to_kanji(lyrics)
+        end
+    end
+    lrc_path = lrc_path .. '.lrc'
+
+    if path:find('://') then
+        if lyrics:find('^%[') then
+            mp.commandv('sub-add', 'memory://' .. lyrics)
+            mp.osd_message('LRC added')
+        else
+            mp.osd_message('These lyrics have no timestamps, so they can\'t be added as a subtitle track')
+        end
+        return
+    end
+
     local success_message = 'LRC downloaded'
     if current_sub_path then
         -- os.rename only works across the same filesystem
@@ -168,17 +190,6 @@ local function save_lyrics(lyrics)
         end
     end
 
-    local path = mp.get_property('path')
-    local lrc_path = (path:match('(.*)%.[^/]*$') or path)
-    if is_japanese(lyrics) then
-        if options.mark_as_ja then
-            lrc_path = lrc_path .. '.ja'
-        end
-        if options.chinese_to_kanji_path ~= '' then
-            lyrics = chinese_to_kanji(lyrics)
-        end
-    end
-    lrc_path = lrc_path .. '.lrc'
     local lrc, error = io.open(lrc_path, 'w')
     if lrc == nil then
         show_error(error)
