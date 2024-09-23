@@ -261,35 +261,25 @@ end)
 
 local songs
 local result, input = pcall(require, 'mp.input')
-if not result then
+if not result or not input.select then
     input = nil
 end
 
 local function select_netease_lyrics()
-    input.get({
-        prompt = 'Enter a song number:',
-        opened = function ()
-            local log = {}
-            for index, song in ipairs(songs) do
-                log[#log+1] = index .. ' ' .. song.artists[1].name .. ' - ' ..
-                    song.name .. ' (' .. song.album.name .. ')'
-            end
+    local items = {}
+    for _, song in ipairs(songs) do
+        items[#items+1] = song.artists[1].name .. ' - ' .. song.name .. ' (' ..
+                          song.album.name .. ')'
+    end
 
-            input.set_log(log)
-        end,
-        submit = function(text)
-            local song = songs[tonumber(text)]
-            if song == nil then
-                input.log_error('Enter a number from 1 to ' .. #songs)
-                return
-            end
-
-            input.terminate()
-
+    input.select({
+        prompt = 'Select a song:',
+        items = items,
+        submit = function(id)
             local response = curl({
                 'curl',
                 '--silent',
-                'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. song.id,
+                'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. songs[id].id,
             })
 
             if response then
