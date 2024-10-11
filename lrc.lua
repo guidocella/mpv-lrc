@@ -2,6 +2,7 @@ local options = {
     musixmatch_token = '220215b052d6aeaa3e9a410986f6c3ae7ea9f5238731cb918d05ea',
     mark_as_ja = false,
     chinese_to_kanji_path = '',
+    strip_artists = false,
 }
 local utils = require 'mp.utils'
 
@@ -133,6 +134,15 @@ local function chinese_to_kanji(lyrics)
     return lyrics
 end
 
+local function strip_artists(lyrics)
+    for _, pattern in pairs({'作词', '作詞', '作曲', '制作人', '编曲', '編曲', '詞', '曲'}) do
+        lyrics = lyrics:gsub('%[[%d:%.]*] ?' .. pattern .. ' ?[:：] ?.-\n', '')
+    end
+
+    return lyrics
+end
+
+
 local function save_lyrics(lyrics)
     -- NetEase can return 2-line LRCs with just the names of the artists, treat them as not found.
     if lyrics == '' or select(2, lyrics:gsub('\n', '')) == 2 then
@@ -159,6 +169,9 @@ local function save_lyrics(lyrics)
         if options.chinese_to_kanji_path ~= '' then
             lyrics = chinese_to_kanji(lyrics)
         end
+    end
+    if options.strip_artists then
+        lyrics = strip_artists(lyrics)
     end
     lrc_path = lrc_path .. '.lrc'
 
