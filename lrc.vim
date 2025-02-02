@@ -13,4 +13,4 @@ nnoremap <buffer> <F6> <Cmd>let sub_start = json_decode(system('echo ''{ "comman
             \ \| <CR>
 nnoremap <buffer> <F5> -y%k"_Dpb<C-x>2j0
 imap <buffer> <F7> <C-g>u<Esc><F7>
-imap <buffer> <F8> <Esc><F8, , ss>
+imap <buffer> <F8> <Esc><F8>
