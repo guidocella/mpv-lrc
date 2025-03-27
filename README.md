@@ -10,6 +10,8 @@ The default keybinding is `Alt+m`, and it can be changed by binding `script-mess
 
 ### netease-download
 
+This is currently broken as the API seems to return unrelated Chinese songs.
+
 Downloads the lyrics of the currently playing song from NetEase's API. It has more Japanese lyrics than Musixmatch.
 
 NetEase's API doesn't return lyrics directly, but a list of matching entries. `lrc.lua` fetches the first 9, and if mpv's version is >= 0.39, it makes you select which one to download from the console, or download directly when there's only 1 match. Otherwise it downloads the first LRC whose album matches, or the first one if no entry's album matches.
