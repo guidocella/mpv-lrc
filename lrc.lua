@@ -157,9 +157,6 @@ local function save_lyrics(lyrics)
         return
     end
 
-    -- NetEase's LRCs can have 3-digit milliseconds, which messes up the sub's timings in mpv.
-    lyrics = lyrics:gsub('(%.%d%d)%d]', '%1]')
-
     local path = mp.get_property('path')
     local lrc_path = (path:match('(.*)%.[^/]*$') or path)
     if is_japanese(lyrics) then
