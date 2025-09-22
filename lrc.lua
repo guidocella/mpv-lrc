@@ -270,10 +270,7 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
 end)
 
 local songs
-local result, input = pcall(require, 'mp.input')
-if not result or not input.select then
-    input = nil
-end
+local _, input = pcall(require, 'mp.input')
 
 local function select_netease_lyrics()
     local items = {}
@@ -300,7 +297,7 @@ local function select_netease_lyrics()
 end
 
 mp.add_key_binding('Alt+n', 'netease-download', function()
-    if songs and input then
+    if songs then
         select_netease_lyrics()
 
         return
@@ -344,77 +341,32 @@ mp.add_key_binding('Alt+n', 'netease-download', function()
         return
     end
 
-    if input then
-        if #songs == 1 then
-            response = curl({
-                'curl',
-                '--silent',
-                'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. songs[1].id,
-            })
+    if #songs == 1 then
+        response = curl({
+            'curl',
+            '--silent',
+            'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. songs[1].id,
+        })
 
-            if response then
-                save_lyrics(response.lrc.lyric)
-            end
-
-            return
+        if response then
+            save_lyrics(response.lrc.lyric)
         end
-
-        select_netease_lyrics()
 
         return
     end
 
-    for _, song in ipairs(songs) do
-        mp.msg.info(
-            'Found lyrics for the song with id ' .. song.id ..
-            ', name ' .. song.name ..
-            ', artist ' .. song.artists[1].name ..
-            ', album ' .. song.album.name ..
-            ', url https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. song.id
-        )
-    end
-
-    local song = songs[1]
-    if album then
-        album = album:lower()
-
-        for _, loop_song in ipairs(songs) do
-            if loop_song.album.name:lower() == album then
-                song = loop_song
-                break
-            end
-        end
-    end
-
-    mp.msg.info(
-        'Downloading lyrics for the song with id ' .. song.id ..
-        ', name ' .. song.name ..
-        ', artist ' .. song.artists[1].name ..
-        ', album ' .. song.album.name
-    )
-
-    response = curl({
-        'curl',
-        '--silent',
-        'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. song.id,
-    })
-
-    if response then
-        save_lyrics(response.lrc.lyric)
-    end
+    select_netease_lyrics()
 end)
 
-if input then
-    mp.register_event('end-file', function()
-        songs = nil
-    end)
+mp.register_event('end-file', function()
+    songs = nil
+end)
 
-    -- Allow retrieving different lyrics after changing media-title in the
-    -- console.
-    mp.observe_property('force-media-title', 'native', function()
-        songs = nil
-    end)
-end
+-- Allow retrieving different lyrics after changing media-title in the
+-- console.
+mp.observe_property('force-media-title', 'native', function()
+    songs = nil
+end)
 
 mp.add_key_binding('Alt+o', 'offset-sub', function()
     local sub_path = mp.get_property('current-tracks/sub/external-filename')
