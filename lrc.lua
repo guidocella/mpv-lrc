@@ -52,14 +52,6 @@ local function get_metadata()
     local artist = metadata.artist or metadata.ARTIST or metadata.Artist
     local album = metadata.album or metadata.ALBUM or metadata.Album
 
-    if not title then
-        return false, 'This song has no title metadata'
-    end
-
-    if not artist then
-        return false, 'This song has no artist metadata'
-    end
-
     return title, artist, album
 end
 
@@ -87,7 +79,7 @@ local function is_japanese(lyrics)
 end
 
 local function save_lyrics(lyrics)
-    if lyrics == '' then
+    if lyrics == '' or lyrics == nil then
         show_error('Lyrics not found')
         return
     end
@@ -160,6 +152,16 @@ mp.add_key_binding('Alt+m', 'musixmatch-download', function()
         return
     end
 
+    if not title then
+        show_error('This song has no title metadata')
+        return
+    end
+
+    if not artist then
+        show_error('This song has no artist metadata')
+        return
+    end
+
     mp.osd_message('Downloading lyrics')
 
     local response = curl({
@@ -207,6 +209,118 @@ end)
 
 local songs
 local _, input = pcall(require, 'mp.input')
+
+local function get_song_type(song)
+    if song.syncedLyrics then
+        return 'Synced'
+    end
+
+    if song.plainLyrics then
+        return 'Plain'
+    end
+
+    return 'Instrumental'
+end
+
+local function select_lrclib_lyrics()
+    local items = {}
+
+    for i, song in ipairs(songs) do
+        items[i] = song.artistName .. ' - ' .. song.trackName ..
+        ' (' .. song.albumName .. ')' ..
+        mp.format_time(song.duration, ' %M:%S ') ..
+        get_song_type(song)
+    end
+
+    input.select({
+        prompt = 'Select lyrics:',
+        items = items,
+        submit = function (i)
+            save_lyrics(songs[i].syncedLyrics or songs[i].plainLyrics)
+        end
+    })
+end
+
+local function lrclib_search(title, artist)
+    if songs then
+        return select_lrclib_lyrics()
+    end
+
+    local args = {
+        'curl',
+        '--silent',
+        '--get',
+        '--user-agent', 'mpv-lrc (https://github.com/guidocella/mpv-lrc)',
+        'https://lrclib.net/api/search',
+        '--data', 'duration=' .. mp.get_property_native('duration'),
+    }
+
+    if title and artist then
+        args[#args + 1] = '--data-urlencode'
+        args[#args + 1] = 'track_name=' .. title
+        args[#args + 1] = '--data-urlencode'
+        args[#args + 1] = 'artist_name=' .. artist
+    else
+        title = mp.get_property('media-title')
+
+        if not title then
+            show_error('No title available')
+            return
+        end
+
+        args[#args+1] = '--data-urlencode'
+        args[#args+1] = 'q=' .. title
+    end
+
+    local response = curl(args)
+
+    if not response then
+        return
+    end
+
+    if response.code then
+        show_error(response.message)
+        return
+    end
+
+    songs = response
+
+    select_lrclib_lyrics()
+end
+
+mp.add_key_binding('Alt+l', 'lrclib-download', function()
+    local title, artist, album = get_metadata()
+
+    mp.osd_message('Downloading lyrics')
+
+    if not title or not artist or not album then
+        lrclib_search(title, artist)
+        return
+    end
+
+    local response = curl({
+        'curl',
+        '--silent',
+        '--get',
+        '--user-agent', 'mpv-lrc (https://github.com/guidocella/mpv-lrc)',
+        'https://lrclib.net/api/get',
+        '--data-urlencode', 'track_name=' .. title,
+        '--data-urlencode', 'artist_name=' .. artist,
+        '--data-urlencode', 'album_name=' .. album,
+        '--data', 'duration=' .. mp.get_property_native('duration'),
+    })
+
+    if not response then
+        return
+    end
+
+    if response.code then
+        show_error(response.message)
+        return
+    end
+
+    save_lyrics(response.syncedLyrics or response.plainLyrics)
+end)
 
 mp.register_event('end-file', function()
     songs = nil
