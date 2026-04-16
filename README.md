@@ -8,18 +8,6 @@ Downloads the lyrics of the currently playing song from Musixmatch's API.
 
 The default keybinding is `Alt+m`, and it can be changed by binding `script-message musixmatch-download`
 
-### netease-download
-
-This is currently broken as the API seems to return unrelated Chinese songs.
-
-Downloads the lyrics of the currently playing song from NetEase's API. It has more Japanese lyrics than Musixmatch.
-
-NetEase's API doesn't return lyrics directly, but a list of matching entries. `lrc.lua` fetches the first 9 and makes you select which one to download, or download directly when there's only 1 match.
-
-While Musixmatch requires artist metadata, `netease-download` fallsback to querying by `media-title` if metadata is unavailable.
-
-The default keybinding is `Alt+n`, and it can be changed by binding `script-message netease-download`
-
 ### offset-sub
 
 After adjusting `sub-delay` in mpv, this offsets the timestamps in the current subtitle file accordingly. It then resets `sub-delay` and reloads the subtitle track so you can offset it again if necessary. This works with any external subtitle and not just LRC. ffmpeg needs to be in `PATH`, or in the same folder as mpv on Windows, for this to work.

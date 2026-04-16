@@ -1,8 +1,6 @@
 local options = {
     musixmatch_token = '2501192ac605cc2e16b6b2c04fe43d1011a38d919fe802976084e7',
     mark_as_ja = false,
-    chinese_to_kanji_path = '',
-    strip_artists = false,
 }
 local utils = require 'mp.utils'
 
@@ -88,64 +86,8 @@ local function is_japanese(lyrics)
     end
 end
 
-local function chinese_to_kanji(lyrics)
-    local mappings, error = io.open(
-        mp.command_native({'expand-path', options.chinese_to_kanji_path})
-    )
-
-    if mappings == nil then
-        show_error(error)
-        return lyrics
-    end
-
-    -- Save the original lyrics to compare them.
-    local original = io.open('/tmp/original.lrc', 'w')
-    if original then
-        original:write(lyrics)
-        original:close()
-    end
-
-    for mapping in mappings:lines() do
-        local num_matches
-
-        -- gsub on Unicode lyrics seems to stop at the first match. I have
-        -- no idea why this works.
-        repeat
-            lyrics, num_matches = lyrics:gsub(
-                mapping:gsub(' .*', ''),
-                mapping:gsub('.* ', '')
-            )
-        until num_matches == 0
-    end
-
-    mappings:close()
-
-    -- Also remove the pointless owari line when present.
-    for _, pattern in pairs({
-        'おわり',
-        '【 おわり 】',
-        ' ?終わり',
-        '終わる',
-        'END',
-    }) do
-        lyrics = lyrics:gsub(']' .. pattern .. '\n', ']\n')
-    end
-
-    return lyrics
-end
-
-local function strip_artists(lyrics)
-    for _, pattern in pairs({'作词', '作詞', '作曲', '制作人', '编曲', '編曲', '詞', '曲'}) do
-        lyrics = lyrics:gsub('%[[%d:%.]*] ?' .. pattern .. ' ?[:：] ?.-\n', '')
-    end
-
-    return lyrics
-end
-
-
 local function save_lyrics(lyrics)
-    -- NetEase can return 2-line LRCs with just the names of the artists, treat them as not found.
-    if lyrics == '' or select(2, lyrics:gsub('\n', '')) == 2 then
+    if lyrics == '' then
         show_error('Lyrics not found')
         return
     end
@@ -163,12 +105,6 @@ local function save_lyrics(lyrics)
         if options.mark_as_ja then
             lrc_path = lrc_path .. '.ja'
         end
-        if options.chinese_to_kanji_path ~= '' then
-            lyrics = chinese_to_kanji(lyrics)
-        end
-    end
-    if options.strip_artists then
-        lyrics = strip_artists(lyrics)
     end
     lrc_path = lrc_path .. '.lrc'
 
@@ -271,92 +207,6 @@ end)
 
 local songs
 local _, input = pcall(require, 'mp.input')
-
-local function select_netease_lyrics()
-    local items = {}
-    for _, song in ipairs(songs) do
-        items[#items+1] = song.artists[1].name .. ' - ' .. song.name .. ' (' ..
-                          song.album.name .. ')'
-    end
-
-    input.select({
-        prompt = 'Select a song:',
-        items = items,
-        submit = function(id)
-            local response = curl({
-                'curl',
-                '--silent',
-                'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. songs[id].id,
-            })
-
-            if response then
-                save_lyrics(response.lrc.lyric)
-            end
-        end
-    })
-end
-
-mp.add_key_binding('Alt+n', 'netease-download', function()
-    if songs then
-        select_netease_lyrics()
-
-        return
-    end
-
-    local title, artist, album = get_metadata()
-    local keywords
-    if title then
-        keywords = title .. ' ' .. artist
-    else
-        keywords = mp.get_property('media-title')
-        if not keywords then
-            show_error('No metadata or media-title are loaded')
-            return
-        end
-    end
-
-    mp.osd_message('Downloading lyrics')
-
-    local response = curl({
-        'curl',
-        '--silent',
-        '--get',
-        'https://music.xianqiao.wang/neteaseapiv2/search?limit=9',
-        '--data-urlencode', 'keywords=' .. keywords,
-    })
-
-    if not response then
-        return
-    end
-
-    if not response.result then
-        show_error('Lyrics not found')
-        return
-    end
-
-    songs = response.result.songs
-
-    if songs == nil or #songs == 0 then
-        show_error('Lyrics not found')
-        return
-    end
-
-    if #songs == 1 then
-        response = curl({
-            'curl',
-            '--silent',
-            'https://music.xianqiao.wang/neteaseapiv2/lyric?id=' .. songs[1].id,
-        })
-
-        if response then
-            save_lyrics(response.lrc.lyric)
-        end
-
-        return
-    end
-
-    select_netease_lyrics()
-end)
 
 mp.register_event('end-file', function()
     songs = nil
