@@ -223,6 +223,11 @@ local function get_song_type(song)
 end
 
 local function select_lrclib_lyrics()
+    if #songs == 0 then
+        show_error('Lyrics not found')
+        return
+    end
+
     local items = {}
 
     for i, song in ipairs(songs) do
