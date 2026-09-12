@@ -2,12 +2,6 @@ This is a collection of scripts to manage LRC synchronized lyrics of songs playi
 
 ## lrc.lua
 
-### musixmatch-download
-
-Downloads the lyrics of the currently playing song from Musixmatch's API.
-
-The default keybinding is `Alt+m`, and it can be changed by binding `script-message musixmatch-download`
-
 ### lrclib-download
 
 Downloads the lyrics of the currently playing song from LRCLIB's API.
@@ -15,6 +9,12 @@ Downloads the lyrics of the currently playing song from LRCLIB's API.
 When all of the title, artist and album are available, LRCLIB can return the best match directly. Otherwise a search is performed which makes you select which one to download.
 
 The default keybinding is `Alt+l`, and it can be changed by binding `script-message lrclib-download`
+
+### musixmatch-download (currently broken)
+
+Downloads the lyrics of the currently playing song from Musixmatch's API.
+
+The default keybinding is `Alt+m`, and it can be changed by binding `script-message musixmatch-download`
 
 ### offset-sub
 
